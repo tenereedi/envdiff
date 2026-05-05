@@ -61,6 +61,19 @@ class DiffResult:
     def has_differences(self) -> bool:
         return bool(self.added or self.removed or self.changed)
 
+    def summary(self) -> str:
+        """Return a short human-readable summary of the diff result."""
+        parts = []
+        if self.added:
+            parts.append(f"{len(self.added)} added")
+        if self.removed:
+            parts.append(f"{len(self.removed)} removed")
+        if self.changed:
+            parts.append(f"{len(self.changed)} changed")
+        if self.unchanged:
+            parts.append(f"{len(self.unchanged)} unchanged")
+        return ", ".join(parts) if parts else "no entries"
+
 
 def _mask(value: Optional[str]) -> Optional[str]:
     if value is None:
