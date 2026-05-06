@@ -82,6 +82,18 @@ def test_json_status_values(sample_entries):
     assert statuses["SECRET_KEY"] == "changed"
 
 
+def test_json_masked_values_not_exposed(sample_entries):
+    """Ensure raw secret values are not present in JSON output for masked entries."""
+    data = json.loads(format_json(sample_entries))
+    secret_entry = next(r for r in data if r["key"] == "SECRET_KEY")
+    raw_output = format_json(sample_entries)
+    assert "old_secret" not in raw_output
+    assert "new_secret" not in raw_output
+    # Masked placeholders should appear instead
+    assert secret_entry.get("value_a") == "***"
+    assert secret_entry.get("value_b") == "***"
+
+
 def test_format_diff_dispatches_json(sample_entries):
     result = format_diff(sample_entries, fmt=OutputFormat.JSON)
     assert result.startswith("[")
