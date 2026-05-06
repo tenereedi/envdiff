@@ -92,3 +92,15 @@ def test_skipped_action_has_comment(result_prefer_b):
     skip_actions = [a for a in result_prefer_b.actions if a.action == "skip"]
     assert len(skip_actions) == 1
     assert skip_actions[0].comment is not None
+
+
+def test_reconcile_prefer_a_skips_removed_key(result_prefer_a):
+    """Removed keys should be skipped regardless of the prefer setting."""
+    assert "OLD_KEY" not in result_prefer_a.as_dict()
+    assert "OLD_KEY" in result_prefer_a.skipped_keys
+
+
+def test_reconcile_prefer_a_includes_added_key(result_prefer_a):
+    """Keys added in B should be included even when preferring A."""
+    assert "NEW_KEY" in result_prefer_a.as_dict()
+    assert result_prefer_a.as_dict()["NEW_KEY"] == "new_value"
