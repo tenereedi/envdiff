@@ -97,3 +97,17 @@ def test_as_dict_structure(parsed_a, parsed_b):
     assert "entry_count" in d
     assert "conflict_count" in d
     assert isinstance(d["conflicts"], list)
+
+
+def test_as_dict_conflict_count_matches_conflicts_list(parsed_a, parsed_b):
+    """Ensure conflict_count in as_dict() is consistent with the conflicts list length."""
+    result = merge(parsed_a, parsed_b)
+    d = result.as_dict()
+    assert d["conflict_count"] == len(d["conflicts"])
+
+
+def test_as_dict_entry_count_matches_entries(parsed_a, parsed_b):
+    """Ensure entry_count in as_dict() matches the actual number of entries."""
+    result = merge(parsed_a, parsed_b, strategy=MergeStrategy.UNION)
+    d = result.as_dict()
+    assert d["entry_count"] == len([e for e in result.entries if e.key])
