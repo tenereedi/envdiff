@@ -10,6 +10,7 @@ SAMPLE_ENV = "APP=myapp\nDEBUG=false\nSECRET=abc\n"
 
 
 def _ns(**kwargs):
+    """Build an argparse.Namespace with sensible defaults for patch tests."""
     defaults = {
         "env_file": ".env",
         "overrides": ["DEBUG=true"],
@@ -22,6 +23,7 @@ def _ns(**kwargs):
 
 @pytest.fixture
 def env_file(tmp_path):
+    """Create a temporary .env file populated with SAMPLE_ENV content."""
     p = tmp_path / ".env"
     p.write_text(SAMPLE_ENV)
     return str(p)
@@ -79,6 +81,12 @@ def test_invalid_override_exits(env_file):
     with pytest.raises(SystemExit) as exc:
         run_patch(args)
     assert exc.value.code == 2
+
+
+def test_no_overrides_returns_zero(env_file):
+    """Patching with an empty override list should succeed without error."""
+    args = _ns(env_file=env_file, overrides=[])
+    assert run_patch(args) == 0
 
 
 def test_build_patch_parser_returns_parser():
