@@ -47,6 +47,12 @@ def run_report(args: argparse.Namespace) -> int:
     except FileNotFoundError:
         print(f"error: file not found: {args.file}", file=sys.stderr)
         return 2
+    except PermissionError:
+        print(f"error: permission denied: {args.file}", file=sys.stderr)
+        return 2
+    except OSError as exc:
+        print(f"error: could not read file: {args.file}: {exc}", file=sys.stderr)
+        return 2
 
     parsed = parse_env_string(raw, source=args.file)
 
